@@ -1,12 +1,14 @@
+import { Link } from 'react-router-dom'
+
 function Navigation() {
   return (
     <header className="topbar">
       <a className="brand" href="/">
         Blood Donation Web
       </a>
-      <a className="login-button" href="#login">
+      <Link className="login-button" to="/admin/login">
         Login
-      </a>
+      </Link>
     </header>
   )
 }
