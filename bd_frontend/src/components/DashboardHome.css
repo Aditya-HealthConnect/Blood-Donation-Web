@@ -1,0 +1,364 @@
+/* ===== Dashboard Home Styles ===== */
+/* Uses ONLY global CSS variables from index.css */
+
+/* ---- Skeleton Shimmer ---- */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-neutral) 25%, var(--border-color) 50%, var(--bg-neutral) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ---- Dashboard Header ---- */
+.dash-header {
+  margin-bottom: 28px;
+}
+
+.dash-header h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.dash-header p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ---- Stat Cards Grid ---- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 1px 3px var(--shadow-color);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.stat-icon.red {
+  background: rgba(211, 47, 47, 0.1);
+  color: var(--primary-red);
+}
+
+.stat-icon.crimson {
+  background: rgba(142, 22, 22, 0.1);
+  color: var(--deep-crimson);
+}
+
+.stat-icon.green {
+  background: rgba(46, 125, 50, 0.1);
+  color: #2E7D32;
+}
+
+.stat-icon.blue {
+  background: rgba(25, 118, 210, 0.1);
+  color: #1976D2;
+}
+
+.stat-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+/* Stat card skeleton */
+.stat-card-skeleton {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.stat-icon-skeleton {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.stat-text-skeleton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skel-label {
+  width: 80px;
+  height: 12px;
+}
+
+.skel-value {
+  width: 60px;
+  height: 28px;
+}
+
+/* ---- Charts Section ---- */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.chart-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.chart-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 16px;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 260px;
+}
+
+/* Chart skeleton */
+.chart-skeleton {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.chart-skel-title {
+  width: 140px;
+  height: 14px;
+  margin-bottom: 16px;
+}
+
+.chart-skel-body {
+  width: 100%;
+  height: 240px;
+}
+
+/* ---- Tables Section ---- */
+.tables-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 16px;
+}
+
+.table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px var(--shadow-color);
+  overflow: hidden;
+}
+
+.table-card-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table-card-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dash-table th {
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  text-align: left;
+  background: var(--bg-neutral);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.dash-table td {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.dash-table tr:last-child td {
+  border-bottom: none;
+}
+
+.dash-table tr:hover td {
+  background: var(--bg-neutral);
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.status-badge.donated {
+  background: rgba(46, 125, 50, 0.1);
+  color: #2E7D32;
+}
+
+.status-badge.attended {
+  background: rgba(25, 118, 210, 0.1);
+  color: #1976D2;
+}
+
+.status-badge.registered {
+  background: rgba(255, 152, 0, 0.1);
+  color: #E65100;
+}
+
+.status-badge.rejected {
+  background: rgba(211, 47, 47, 0.1);
+  color: var(--primary-red);
+}
+
+.status-badge.active {
+  background: rgba(46, 125, 50, 0.1);
+  color: #2E7D32;
+}
+
+.status-badge.upcoming {
+  background: rgba(25, 118, 210, 0.1);
+  color: #1976D2;
+}
+
+.status-badge.completed {
+  background: var(--bg-neutral);
+  color: var(--text-muted);
+}
+
+/* Table skeleton */
+.table-skel-row {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table-skel-row:last-child {
+  border-bottom: none;
+}
+
+.table-skel-cell {
+  height: 14px;
+  border-radius: 4px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tables-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .chart-wrapper {
+    height: 220px;
+  }
+
+  .dash-header h1 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-table th,
+  .dash-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
