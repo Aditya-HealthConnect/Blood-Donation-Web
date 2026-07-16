@@ -31,6 +31,19 @@ function VolunteerManagement() {
   const [selectedCampId, setSelectedCampId] = useState('')
   const [assignLoading, setAssignLoading] = useState(false)
 
+  // Roles permissions
+  const [canWrite, setCanWrite] = useState(false)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('admin')
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored)
+        setCanWrite(parsed.role === 'Super Admin')
+      } catch {}
+    }
+  }, [])
+
   const fetchVolunteers = useCallback(async () => {
     try {
       setLoading(true)
@@ -150,12 +163,14 @@ function VolunteerManagement() {
       {/* Header */}
       <div className="mgmt-page-header">
         <h1>Volunteer Management</h1>
-        <button className="btn-add" onClick={openAddForm}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Add Volunteer
-        </button>
+        {canWrite && (
+          <button className="btn-add" onClick={openAddForm}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Volunteer
+          </button>
+        )}
       </div>
 
       {/* Search */}
@@ -229,32 +244,51 @@ function VolunteerManagement() {
                     )}
                   </td>
                   <td>
-                    <label className="status-toggle">
-                      <input type="checkbox" checked={vol.isActive} onChange={() => handleToggleActive(vol)} />
-                      <span className="toggle-slider" />
-                    </label>
+                    {canWrite ? (
+                      <label className="status-toggle">
+                        <input type="checkbox" checked={vol.isActive} onChange={() => handleToggleActive(vol)} />
+                        <span className="toggle-slider" />
+                      </label>
+                    ) : (
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        background: vol.isActive ? 'rgba(46, 125, 50, 0.08)' : 'rgba(211, 47, 47, 0.08)',
+                        color: vol.isActive ? '#2E7D32' : 'var(--primary-red)',
+                        textTransform: 'capitalize'
+                      }}>
+                        {vol.isActive ? 'active' : 'inactive'}
+                      </span>
+                    )}
                   </td>
                   <td className="cell-muted">{formatDate(vol.createdAt)}</td>
                   <td>
                     <div className="action-btns">
-                      <button className="btn-action" title="Edit" onClick={() => openEditForm(vol)}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                        </svg>
-                      </button>
+                      {canWrite && (
+                        <button className="btn-action" title="Edit" onClick={() => openEditForm(vol)}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
+                        </button>
+                      )}
                       <button className="btn-action" title="Assign Camp" onClick={() => openAssignModal(vol)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                           <polyline points="9 22 9 12 15 12 15 22" />
                         </svg>
                       </button>
-                      <button className="btn-action danger" title="Delete" onClick={() => setDeleteTarget(vol)}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                        </svg>
-                      </button>
+                      {canWrite && (
+                        <button className="btn-action danger" title="Delete" onClick={() => setDeleteTarget(vol)}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
