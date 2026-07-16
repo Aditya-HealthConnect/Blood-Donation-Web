@@ -228,6 +228,30 @@ const getCampsForAssignment = async (_req, res) => {
   }
 };
 
+/**
+ * GET /api/volunteer-management/my-camp
+ * Get the assigned camp for the currently logged-in Volunteer.
+ */
+const getMyCamp = async (req, res) => {
+  try {
+    const volunteer = await Volunteer.findById(req.admin._id)
+      .populate('assignedCampId')
+      .lean();
+
+    if (!volunteer) {
+      return res.status(404).json({ success: false, message: 'Volunteer profile not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: volunteer.assignedCampId || null,
+    });
+  } catch (error) {
+    console.error('Get my camp error:', error.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getVolunteers,
   createVolunteer,
@@ -236,4 +260,5 @@ module.exports = {
   toggleVolunteerActive,
   assignCamp,
   getCampsForAssignment,
+  getMyCamp,
 };

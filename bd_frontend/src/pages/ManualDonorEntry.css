@@ -1,0 +1,114 @@
+/* ===== Manual Donor Entry CSS ===== */
+
+.form-card {
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.form-card-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-card-title svg {
+  width: 22px;
+  height: 22px;
+  color: var(--primary-red);
+}
+
+.form-card-desc {
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+.form-group-full {
+  grid-column: span 2;
+}
+
+/* Validation error labels */
+.error-text {
+  color: var(--primary-red);
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Radio Option Groups */
+.radio-options-group {
+  display: flex;
+  gap: 20px;
+  height: 42px;
+  align-items: center;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.radio-option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-red);
+  cursor: pointer;
+}
+
+.form-actions-bar {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-form-cancel {
+  height: 44px;
+  padding: 0 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-form-cancel:hover {
+  background: var(--bg-neutral);
+}
+
+/* Responsive grid */
+@media (max-width: 576px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-group-full {
+    grid-column: 1;
+  }
+
+  .form-card {
+    padding: 20px;
+  }
+}

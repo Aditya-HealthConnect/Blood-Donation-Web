@@ -1,0 +1,256 @@
+/* ===== Registration Management CSS ===== */
+/* Reuses UI styles and fits within the Admin theme */
+
+.registration-mgmt-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---- Filter Controls Grid ---- */
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px var(--shadow-color);
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filter-select {
+  height: 40px;
+  padding: 0 12px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.filter-select:focus {
+  border-color: var(--primary-red);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-reset {
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+
+.btn-reset:hover {
+  background: var(--bg-neutral);
+}
+
+.btn-export {
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2E7D32; /* Premium Green */
+  color: var(--bg-surface);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-export:hover {
+  background: #1B5E20;
+  box-shadow: 0 4px 10px rgba(46, 125, 80, 0.2);
+}
+
+.btn-export svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---- Registration Details Modal Layout ---- */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  margin-bottom: 24px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-item span {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.detail-item strong {
+  font-size: 14px;
+  color: var(--text-main);
+  word-break: break-all;
+}
+
+.detail-section-title {
+  grid-column: span 2;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-red);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+  margin-top: 10px;
+}
+
+/* ---- Status Update Section in Modal ---- */
+.status-update-box {
+  background: var(--bg-neutral);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-update-box h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.status-options-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.btn-status-option {
+  height: 38px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: capitalize;
+}
+
+.btn-status-option:hover {
+  background: var(--bg-neutral);
+  color: var(--text-main);
+}
+
+.btn-status-option.active.registered {
+  background: rgba(255, 152, 0, 0.15);
+  color: #E65100;
+  border-color: #E65100;
+}
+
+.btn-status-option.active.attended {
+  background: rgba(25, 118, 210, 0.15);
+  color: #1976D2;
+  border-color: #1976D2;
+}
+
+.btn-status-option.active.donated {
+  background: rgba(46, 125, 50, 0.15);
+  color: #2E7D32;
+  border-color: #2E7D32;
+}
+
+.btn-status-option.active.rejected {
+  background: rgba(211, 47, 47, 0.15);
+  color: var(--primary-red);
+  border-color: var(--primary-red);
+}
+
+/* Badge variants for responsive table */
+.status-badge.registered {
+  background: rgba(255, 152, 0, 0.1);
+  color: #E65100;
+}
+
+.status-badge.attended {
+  background: rgba(25, 118, 210, 0.1);
+  color: #1976D2;
+}
+
+.status-badge.donated {
+  background: rgba(46, 125, 50, 0.1);
+  color: #2E7D32;
+}
+
+.status-badge.rejected {
+  background: rgba(211, 47, 47, 0.1);
+  color: var(--primary-red);
+}
+
+/* ---- Responsive Adjustments ---- */
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .filter-actions button {
+    flex: 1;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .detail-section-title {
+    grid-column: 1;
+  }
+
+  .status-options-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

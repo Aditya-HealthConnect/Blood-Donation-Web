@@ -1,0 +1,26 @@
+/* ===== Blood Camps CSS ===== */
+
+.camp-status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  text-align: center;
+}
+
+.camp-status-badge.active {
+  background: rgba(46, 125, 50, 0.08);
+  color: #2E7D32;
+}
+
+.camp-status-badge.upcoming {
+  background: rgba(230, 81, 0, 0.08);
+  color: #E65100;
+}
+
+.camp-status-badge.completed {
+  background: rgba(139, 148, 158, 0.12);
+  color: var(--text-muted);
+}

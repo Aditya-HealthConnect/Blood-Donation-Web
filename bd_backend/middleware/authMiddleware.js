@@ -24,12 +24,17 @@ const protect = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Find admin and attach to request
-    const admin = await Admin.findById(decoded.id);
+    let admin = await Admin.findById(decoded.id);
+
+    if (!admin) {
+      const Volunteer = require('../models/Volunteer');
+      admin = await Volunteer.findById(decoded.id);
+    }
 
     if (!admin) {
       return res.status(401).json({
         success: false,
-        message: 'The admin belonging to this token no longer exists.',
+        message: 'The user belonging to this token no longer exists.',
       });
     }
 
