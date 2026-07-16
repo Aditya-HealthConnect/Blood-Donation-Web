@@ -4,7 +4,7 @@ A premium, responsive, and robust **Blood Donation Camp Management Web Platform*
 
 ---
 
-## 🚀 Key Modules & Features
+## 🚀 What the Project Has (Modules & Features)
 
 ### 1. Landing Portal & Student Registration
 - **Dynamic Timeline:** Automatically fetches upcoming/active blood camps and displays them on the public landing page.
@@ -12,7 +12,7 @@ A premium, responsive, and robust **Blood Donation Camp Management Web Platform*
 
 ### 2. Admin & Volunteer Authentication
 - **Secure Credentials Portal:** Fully protected login system utilizing JWT (JsonWebToken) authorization, bcryptjs password hashing, and Role-Based Access Control (RBAC).
-- **Persistent State:** Manages state persistence and axios request interceptors to auto-attach bearer tokens.
+- **Persistent State:** Manages state persistence and axios request interceptors to auto-stage bearer tokens.
 
 ### 3. Dynamic Management Dashboard
 - **Campaign Analytics:** Showcases metrics: Total Camps, Active/Upcoming Drives, Total Registrations, Today's Registrations, and Total Donated units count.
@@ -45,79 +45,26 @@ A premium, responsive, and robust **Blood Donation Camp Management Web Platform*
 
 ---
 
-## 🎨 UI Design System & Global Styles
+## 🛠️ How it is Done (System Architecture & Implementation)
 
-To ensure a consistent user interface across the entire application, all developers must strictly follow this design system. 
+The platform is designed with a decoupled frontend SPA and backend REST API utilizing a modern **Model-View-Controller (MVC)** structural pattern.
 
-**⚠️ Team Rule:** Never use hardcoded hex colors (e.g., `#D32F2F`) or random fonts in your local component CSS. Always use the global CSS variables defined below.
+### 1. Backend REST API (Node.js & Express)
+- **MVC Architecture:**
+  - **Models:** Built using `mongoose` schemas mapping MongoDB structures (`Admin`, `Volunteer`, `Registration`, `Donor`, `GalleryImage`, `BloodCamp`) with active data validation.
+  - **Controllers:** Express controller functions managing request parameters, data queries, validations, and custom business logic.
+  - **Routes:** Decoupled REST routes linking endpoints directly to controllers.
+- **Security & RBAC Middleware:**
+  - `protect`: Verifies JWT authenticity from authorization headers and binds active users to `req.admin`. Can verify tokens from both the `Admin` and `Volunteer` collections dynamically.
+  - `authorize(...roles)`: Route guards checking authenticated roles against permission allowances (e.g. restricting volunteer creation to `Super Admin`).
+- **Database Relationships:**
+  - `Registration` and `Donor` link to `BloodCamp` via `campId` references.
+  - `Volunteer` links to `BloodCamp` via `assignedCampId`.
 
-### 1. Color Palette Reference
-
-| Color Role | CSS Variable | Hex Code | Usage |
-| :--- | :--- | :--- | :--- |
-| **Primary Red** | `var(--primary-red)` | `#D32F2F` | Main buttons, active links, primary icons |
-| **Primary Hover** | `var(--primary-hover)`| `#B71C1C` | Button hover states |
-| **Deep Crimson**| `var(--deep-crimson)`| `#8E1616` | Footers, bold emphasis text, hero overlays |
-| **Main Bg** | `var(--bg-main)` | `#141619` | Main dark theme background |
-| **Surface Bg** | `var(--bg-surface)` | `#1B1E22` | Card, modal, and dropdown backgrounds |
-| **Neutral Bg** | `var(--bg-neutral)` | `#23272C` | Secondary backgrounds, table headers |
-| **Main Text** | `var(--text-main)` | `#ECEEF0` | Primary headings and body text |
-| **Muted Text** | `var(--text-muted)` | `#8B949E` | Subtitles, placeholders, secondary info |
-| **Border** | `var(--border-color)` | `#2F353C` | Dividers, input borders, card borders |
-
-### 2. Typography
-
-*   **Global Font Family:** Poppins, sans-serif 
-*   **CSS Variable:** `var(--font-main)`
-
-### 3. Usage Example
-
-When styling your individual React components, always reference the variables from the `index.css` file. 
-
-```css
-/* ✅ Correct Way */
-.my-custom-card {
-  background-color: var(--bg-surface);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  font-family: var(--font-main);
-}
-
-.my-custom-card h2 {
-  color: var(--primary-red);
-}
-```
-
----
-
-## 🛠️ Setup & Execution
-
-### 1. Environment Configurations
-
-Create a `.env` file inside the `bd_backend` directory:
-```env
-PORT=5050
-MONGODB_URI=mongodb+srv://BloodDonationCamp:admin123@cluster0.luujrrb.mongodb.net/
-JWT_SECRET=supersecretjwtkey12345!
-JWT_EXPIRES_IN=7d
-```
-
-Create a `.env` file inside the `bd_frontend` directory:
-```env
-VITE_API_BASE_URL=http://localhost:5050
-```
-
-### 2. Running Backend Server
-```bash
-cd bd_backend
-npm install
-node seedDashboard.js  # Seeds database with camps, admins, and registrations
-npm run dev            # Starts REST API server on localhost:5050
-```
-
-### 3. Running Frontend Web App
-```bash
-cd bd_frontend
-npm install
-npm run dev            # Starts Vite development server on localhost:5173
-```
+### 2. Frontend Client (React & Vite)
+- **Single Page Routing:** Employs nested React Router DOM routes mapping access paths to specific view wrappers according to role variables (`/super-admin/*`, `/admin/*`, `/volunteer/*`).
+- **Axios HTTP Client Interceptors:**
+  - **Request Interceptor:** Automatically retrieves JWT keys from `localStorage` and appends them to request headers.
+  - **Response Interceptor:** Standardizes error response mapping. Intercepts `401 Unauthorized` states to automatically delete stale session tokens and log users out.
+- **State Management & Skeletons:** Implements conditional rendering, React state hooks (`useState`, `useCallback`), and custom skeleton layouts to provide loading feedback.
+- **Responsive Layout:** Engineered with flexible layouts and CSS grid systems utilizing unified global styling variables to adapt to mobile screens, tablets, and desktop displays.
