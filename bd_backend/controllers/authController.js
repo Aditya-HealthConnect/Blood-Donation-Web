@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
+const Volunteer = require('../models/Volunteer');
 
 /**
  * POST /api/admin/login
- * Authenticate admin with email & password, return JWT.
+ * Authenticate admin or volunteer with email & password, return JWT.
  */
 const loginAdmin = async (req, res) => {
   try {
@@ -17,10 +18,21 @@ const loginAdmin = async (req, res) => {
       });
     }
 
-    // Find admin by email (include password field)
-    const admin = await Admin.findOne({ email }).select('+password');
+    // Find user by email (first in Admin, then in Volunteer)
+    const lowerEmail = email.toLowerCase();
+    let user = await Admin.findOne({ email: lowerEmail }).select('+password');
+    let role = '';
 
-    if (!admin) {
+    if (user) {
+      role = user.role;
+    } else {
+      user = await Volunteer.findOne({ email: lowerEmail }).select('+password');
+      if (user) {
+        role = 'Volunteer';
+      }
+    }
+
+    if (!user) {
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials',
@@ -28,15 +40,15 @@ const loginAdmin = async (req, res) => {
     }
 
     // Check if account is active
-    if (!admin.isActive) {
+    if (!user.isActive) {
       return res.status(403).json({
         success: false,
-        message: 'Your account has been deactivated. Please contact the Super Admin.',
+        message: 'Your account has been deactivated. Please contact the administrator.',
       });
     }
 
     // Compare passwords
-    const isPasswordMatch = await admin.comparePassword(password);
+    const isPasswordMatch = await user.comparePassword(password);
 
     if (!isPasswordMatch) {
       return res.status(401).json({
@@ -47,7 +59,7 @@ const loginAdmin = async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign(
-      { id: admin._id, role: admin.role },
+      { id: user._id, role: role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
@@ -57,10 +69,10 @@ const loginAdmin = async (req, res) => {
       success: true,
       token,
       admin: {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        role: admin.role,
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: role,
       },
     });
   } catch (error) {
@@ -74,29 +86,39 @@ const loginAdmin = async (req, res) => {
 
 /**
  * GET /api/admin/me
- * Return the currently authenticated admin's profile.
+ * Return the currently authenticated admin's or volunteer's profile.
  * Requires protect middleware.
  */
 const getMe = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.admin.id);
+    let user = await Admin.findById(req.admin.id);
+    let role = '';
 
-    if (!admin) {
+    if (user) {
+      role = user.role;
+    } else {
+      user = await Volunteer.findById(req.admin.id);
+      if (user) {
+        role = 'Volunteer';
+      }
+    }
+
+    if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'Admin not found',
+        message: 'User not found',
       });
     }
 
     res.status(200).json({
       success: true,
       admin: {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        role: admin.role,
-        isActive: admin.isActive,
-        createdAt: admin.createdAt,
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: role,
+        isActive: user.isActive,
+        createdAt: user.createdAt,
       },
     });
   } catch (error) {
