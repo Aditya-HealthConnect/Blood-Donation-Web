@@ -218,12 +218,22 @@ const seedDashboard = async () => {
         const regDate = new Date(camp.date);
         regDate.setDate(regDate.getDate() + dayOffset);
 
+        const passoutYears = [2024, 2025, 2026, 2027, 2028];
+        const rollBranchCode = { CSE: '05', ECE: '04', EEE: '02', Mechanical: '03', Civil: '01', IT: '12', Chemical: '08' };
+
+        const randomBranch = randomFrom(branches);
+        const branchCode = rollBranchCode[randomBranch] || '05';
+        const randomNum = Math.floor(10 + Math.random() * 80); // 10 to 89
+        const rollNumber = `22A81A${branchCode}${randomNum}`;
+
         registrations.push({
           name,
           email,
           phone: `9${Math.floor(100000000 + Math.random() * 900000000)}`,
           bloodGroup: randomFrom(bloodGroups),
-          branch: randomFrom(branches),
+          branch: randomBranch,
+          rollNumber,
+          passoutYear: randomFrom(passoutYears),
           campId: camp._id,
           status,
           registeredAt: regDate,
