@@ -30,6 +30,15 @@ const registrationSchema = new mongoose.Schema({
     required: [true, 'Branch is required'],
     trim: true,
   },
+  rollNumber: {
+    type: String,
+    required: [true, 'Roll number is required'],
+    trim: true,
+  },
+  passoutYear: {
+    type: Number,
+    required: [true, 'Passout year is required'],
+  },
   campId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'BloodCamp',
@@ -38,8 +47,8 @@ const registrationSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: {
-      values: ['registered', 'attended', 'donated', 'rejected'],
-      message: 'Status must be registered, attended, donated, or rejected',
+      values: ['registered', 'attended', 'donated', 'rejected', 'absent'],
+      message: 'Status must be registered, attended, donated, rejected, or absent',
     },
     default: 'registered',
   },
