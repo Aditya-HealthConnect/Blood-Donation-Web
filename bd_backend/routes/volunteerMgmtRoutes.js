@@ -9,17 +9,25 @@ const {
   toggleVolunteerActive,
   assignCamp,
   getCampsForAssignment,
+  getMyCamp,
 } = require('../controllers/volunteerMgmtController');
 
 const router = express.Router();
 
-// All routes: Super Admin + Admin
+// Fetch assigned camp: Volunteer, Admin, Super Admin
+router.get('/api/volunteer-management/my-camp', protect, authorize('Volunteer', 'Super Admin', 'Admin'), getMyCamp);
+
+// View volunteers & camps for assignment: Super Admin + Admin
 router.get('/api/volunteer-management', protect, authorize('Super Admin', 'Admin'), getVolunteers);
 router.get('/api/volunteer-management/camps', protect, authorize('Super Admin', 'Admin'), getCampsForAssignment);
-router.post('/api/volunteer-management', protect, authorize('Super Admin', 'Admin'), createVolunteer);
-router.put('/api/volunteer-management/:id', protect, authorize('Super Admin', 'Admin'), updateVolunteer);
-router.delete('/api/volunteer-management/:id', protect, authorize('Super Admin', 'Admin'), deleteVolunteer);
-router.patch('/api/volunteer-management/:id/toggle-active', protect, authorize('Super Admin', 'Admin'), toggleVolunteerActive);
+
+// Assign volunteers: Super Admin + Admin
 router.patch('/api/volunteer-management/:id/assign-camp', protect, authorize('Super Admin', 'Admin'), assignCamp);
+
+// Write operations (Create, Edit, Delete, Toggle Active): Super Admin only
+router.post('/api/volunteer-management', protect, authorize('Super Admin'), createVolunteer);
+router.put('/api/volunteer-management/:id', protect, authorize('Super Admin'), updateVolunteer);
+router.delete('/api/volunteer-management/:id', protect, authorize('Super Admin'), deleteVolunteer);
+router.patch('/api/volunteer-management/:id/toggle-active', protect, authorize('Super Admin'), toggleVolunteerActive);
 
 module.exports = router;
