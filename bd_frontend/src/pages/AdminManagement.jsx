@@ -39,10 +39,13 @@ function AdminManagement() {
     }
   }, [search, page])
 
-  useEffect(() => { fetchAdmins() }, [fetchAdmins])
+  useEffect(() => {
+    const fetchTimer = setTimeout(() => {
+      fetchAdmins()
+    }, 0)
 
-  // Debounced search
-  useEffect(() => { setPage(1) }, [search])
+    return () => clearTimeout(fetchTimer)
+  }, [fetchAdmins])
 
   const openAddForm = () => {
     setEditingAdmin(null)
@@ -134,7 +137,10 @@ function AdminManagement() {
             type="text"
             placeholder="Search by name or email..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(1)
+            }}
           />
         </div>
         <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{total} admin{total !== 1 ? 's' : ''} found</span>
