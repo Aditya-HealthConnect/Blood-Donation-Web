@@ -7,6 +7,18 @@ import './UserManagement.css' // Import shared table styles
 
 const LIMIT = 10
 
+function getCanManageFromStorage() {
+  const stored = localStorage.getItem('admin')
+  if (!stored) return false
+
+  try {
+    const parsed = JSON.parse(stored)
+    return ['Super Admin', 'Admin'].includes(parsed.role)
+  } catch {
+    return false
+  }
+}
+
 function DonorList() {
   const [donors, setDonors] = useState([])
   const [camps, setCamps] = useState([])
@@ -39,17 +51,7 @@ function DonorList() {
   const [deleteLoading, setDeleteLoading] = useState(false)
 
   // Auth roles permissions check
-  const [canManage, setCanManage] = useState(false)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('admin')
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored)
-        setCanManage(['Super Admin', 'Admin'].includes(parsed.role))
-      } catch { /* silent */ }
-    }
-  }, [])
+  const [canManage] = useState(getCanManageFromStorage)
 
   // Fetch active / all camps for filters
   useEffect(() => {
@@ -80,13 +82,12 @@ function DonorList() {
   }, [search, campId, page])
 
   useEffect(() => {
-    fetchDonors()
-  }, [fetchDonors])
+    const fetchTimer = setTimeout(() => {
+      fetchDonors()
+    }, 0)
 
-  // Reset page when criteria changes
-  useEffect(() => {
-    setPage(1)
-  }, [search, campId])
+    return () => clearTimeout(fetchTimer)
+  }, [fetchDonors])
 
   // Open Edit Modal prefilled
   const handleOpenEdit = (donor) => {
@@ -181,7 +182,10 @@ function DonorList() {
             type="text"
             placeholder="Search by name or mobile number..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(1)
+            }}
           />
         </div>
 
@@ -189,7 +193,10 @@ function DonorList() {
         <select
           className="filter-select"
           value={campId}
-          onChange={(e) => setCampId(e.target.value)}
+          onChange={(e) => {
+            setCampId(e.target.value)
+            setPage(1)
+          }}
           style={{ width: '220px', height: '42px' }}
         >
           <option value="">All Camp Events</option>
