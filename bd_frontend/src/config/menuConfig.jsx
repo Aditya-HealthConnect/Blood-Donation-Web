@@ -83,6 +83,14 @@ const DonationStatusIcon = (
   </svg>
 )
 
+const GalleryIcon = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+    <circle cx="8.5" cy="8.5" r="1.5" />
+    <polyline points="21 15 16 10 5 21" />
+  </svg>
+)
+
 export const sidebarMenus = {
   'Super Admin': [
     {
@@ -93,6 +101,7 @@ export const sidebarMenus = {
         { label: 'Registrations', path: '/super-admin/registrations', icon: RegistrationIcon },
         { label: 'Donors', path: '/super-admin/donors', icon: DonorIcon },
         { label: 'Analytics', path: '/super-admin/analytics', icon: AnalyticsIcon },
+        { label: 'Gallery', path: '/super-admin/gallery', icon: GalleryIcon },
       ],
     },
     {
@@ -112,6 +121,7 @@ export const sidebarMenus = {
         { label: 'Registrations', path: '/admin/registrations', icon: RegistrationIcon },
         { label: 'Donors', path: '/admin/donors', icon: DonorIcon },
         { label: 'Analytics', path: '/admin/analytics', icon: AnalyticsIcon },
+        { label: 'Gallery', path: '/admin/gallery', icon: GalleryIcon },
       ],
     },
     {
