@@ -1,31 +1,16 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { Html5Qrcode } from 'html5-qrcode'
 import api from '../config/api'
-import './UserManagement.css' // Import skeleton loader and modal styles
+import './UserManagement.css'
 import './DonationDesk.css'
 
 function DonationDesk() {
-  // Navigation / Tab state
-  const [activeTab, setActiveTab] = useState('search') // 'search' | 'scan'
-  const [searchTab, setSearchTab] = useState('roll') // 'roll' | 'phone'
-
-  // Search input state
+  const [searchTab, setSearchTab] = useState('roll')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchLoading, setSearchLoading] = useState(false)
-
-  // Matched registration details state
   const [student, setStudent] = useState(null)
-
-  // QR Scanner instance ref
-  const [scannerActive, setScannerActive] = useState(false)
-  const qrScannerRef = useRef(null)
-  const scannerContainerId = 'qr-reader-viewport'
-
-  // Action status loading
   const [actionLoading, setActionLoading] = useState(false)
 
-  // Handle Search submit
   const handleSearchSubmit = async (e) => {
     e.preventDefault()
     if (!searchQuery.trim()) {
@@ -48,11 +33,9 @@ function DonationDesk() {
     }
   }
 
-  // Update student status
   const handleStatusUpdate = async (newStatus) => {
     if (!student) return
 
-    // Prevent duplicate donation updates
     if (student.status === 'donated' && newStatus === 'donated') {
       toast.error('Student has already donated blood!')
       return
@@ -66,7 +49,6 @@ function DonationDesk() {
       
       toast.success(res.data.message || `Status updated to ${newStatus}`)
       
-      // Update local state details
       setStudent((prev) => ({
         ...prev,
         status: newStatus,
@@ -82,95 +64,6 @@ function DonationDesk() {
     }
   }
 
-  // QR Scanner implementation
-  const startScanner = () => {
-    setScannerActive(true)
-    // Small delay to ensure container element is mounted
-    setTimeout(() => {
-      try {
-        const html5QrCode = new Html5Qrcode(scannerContainerId)
-        qrScannerRef.current = html5QrCode
-
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } }
-
-        html5QrCode.start(
-          { facingMode: 'environment' }, // Rear camera
-          config,
-          (decodedText) => {
-            // QR Scan success handler
-            toast.success('QR Code scanned successfully!')
-            stopScanner()
-            setActiveTab('search') // Switch back to details view
-            setSearchQuery(decodedText)
-            
-            // Trigger automatic search
-            triggerAutoSearch(decodedText)
-          },
-          () => {
-            // Scanning in progress (silent error logs)
-          }
-        ).catch(() => {
-          toast.error('Failed to access camera. Please check permissions.')
-          setScannerActive(false)
-        })
-      } catch (err) {
-        console.error('QR start error:', err)
-        toast.error('Failed to initialize camera scanner')
-        setScannerActive(false)
-      }
-    }, 200)
-  }
-
-  const stopScanner = () => {
-    if (qrScannerRef.current && qrScannerRef.current.isScanning) {
-      qrScannerRef.current.stop().then(() => {
-        setScannerActive(false)
-        qrScannerRef.current = null
-      }).catch((err) => {
-        console.error('QR stop error:', err)
-        setScannerActive(false)
-      })
-    } else {
-      setScannerActive(false)
-    }
-  }
-
-  // Automatic search triggered by QR scanner result
-  const triggerAutoSearch = async (queryVal) => {
-    setSearchLoading(true)
-    try {
-      const res = await api.get('/api/donation-desk/search', {
-        params: { query: queryVal },
-      })
-      setStudent(res.data.data)
-      toast.success('Registration verified!')
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'No registration matched this QR')
-      setStudent(null)
-    } finally {
-      setSearchLoading(false)
-    }
-  }
-
-  // Cleanup camera scanner on component unmount
-  useEffect(() => {
-    return () => {
-      if (qrScannerRef.current && qrScannerRef.current.isScanning) {
-        qrScannerRef.current.stop().catch((e) => console.error(e))
-      }
-    }
-  }, [])
-
-  // Switch tabs handler
-  const handleTabChange = (tab) => {
-    setActiveTab(tab)
-    if (tab === 'scan') {
-      startScanner()
-    } else {
-      stopScanner()
-    }
-  }
-
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -181,107 +74,48 @@ function DonationDesk() {
 
   return (
     <div className="donation-desk-container">
-      {/* Title */}
       <div className="mgmt-page-header">
         <h1>Donation Desk</h1>
       </div>
 
       <div className="desk-layout">
-        {/* LEFT COLUMN: Search & Camera Feed */}
+        {/* LEFT COLUMN: Search */}
         <div className="desk-panel-left">
-          {/* Action Choice Tabs */}
-          <div className="gallery-controls" style={{ padding: '8px 16px' }}>
-            <div className="search-type-selector" style={{ margin: 0, border: 'none' }}>
+          <div className="desk-card">
+            <h3 className="desk-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              Search Registration
+            </h3>
+            
+            <div className="search-type-selector">
               <button
-                className={`btn-search-tab ${activeTab === 'search' ? 'active' : ''}`}
-                onClick={() => handleTabChange('search')}
+                className={`btn-search-tab ${searchTab === 'roll' ? 'active' : ''}`}
+                onClick={() => setSearchTab('roll')}
               >
-                Verification Desk
+                By Roll Number
               </button>
               <button
-                className={`btn-search-tab ${activeTab === 'scan' ? 'active' : ''}`}
-                onClick={() => handleTabChange('scan')}
+                className={`btn-search-tab ${searchTab === 'phone' ? 'active' : ''}`}
+                onClick={() => setSearchTab('phone')}
               >
-                Scan QR Code
+                By Mobile Number
               </button>
             </div>
+
+            <form className="search-form" onSubmit={handleSearchSubmit}>
+              <input
+                type="text"
+                placeholder={searchTab === 'roll' ? 'Enter Roll Number (e.g. 22A81A0512)' : 'Enter Mobile Number'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button className="btn-search-submit" type="submit" disabled={searchLoading}>
+                {searchLoading ? 'Searching...' : 'Verify'}
+              </button>
+            </form>
           </div>
-
-          {/* Search Card */}
-          {activeTab === 'search' && (
-            <div className="desk-card">
-              <h3 className="desk-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                Search Registration
-              </h3>
-              
-              <div className="search-type-selector">
-                <button
-                  className={`btn-search-tab ${searchTab === 'roll' ? 'active' : ''}`}
-                  onClick={() => setSearchTab('roll')}
-                >
-                  By Roll Number
-                </button>
-                <button
-                  className={`btn-search-tab ${searchTab === 'phone' ? 'active' : ''}`}
-                  onClick={() => setSearchTab('phone')}
-                >
-                  By Mobile Number
-                </button>
-              </div>
-
-              <form className="search-form" onSubmit={handleSearchSubmit}>
-                <input
-                  type="text"
-                  placeholder={searchTab === 'roll' ? 'Enter Roll Number (e.g. 22A81A0512)' : 'Enter Mobile Number'}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button className="btn-search-submit" type="submit" disabled={searchLoading}>
-                  {searchLoading ? 'Searching...' : 'Verify'}
-                </button>
-              </form>
-            </div>
-          )}
-
-          {/* QR Camera Viewport */}
-          {activeTab === 'scan' && (
-            <div className="desk-card qr-scanner-box">
-              <h3 className="desk-card-title" style={{ width: '100%', justifyContent: 'center' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7" height="7" />
-                  <rect x="14" y="3" width="7" height="7" />
-                  <rect x="3" y="14" width="7" height="7" />
-                  <rect x="14" y="14" width="7" height="7" />
-                </svg>
-                QR Code Verification
-              </h3>
-
-              <div className="qr-camera-viewport" id={scannerContainerId}>
-                {!scannerActive && (
-                  <div className="qr-camera-placeholder">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                      <circle cx="12" cy="13" r="4" />
-                    </svg>
-                    <span>Camera scanner is stopped</span>
-                  </div>
-                )}
-              </div>
-
-              {scannerActive ? (
-                <button className="btn-qr-toggle stop" onClick={stopScanner}>
-                  Stop Camera Feed
-                </button>
-              ) : (
-                <button className="btn-qr-toggle start" onClick={startScanner}>
-                  Start Scanner Camera
-                </button>
-              )}
-            </div>
-          )}
         </div>
 
         {/* RIGHT COLUMN: Search Results Profile Cards */}
@@ -307,7 +141,7 @@ function DonationDesk() {
                 <line x1="16" y1="17" x2="8" y2="17" />
               </svg>
               <h3>No Student Verified</h3>
-              <p>Type a roll number/mobile above or scan a student QR badge code to pull details.</p>
+              <p>Type a roll number or mobile number above to pull student details.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
