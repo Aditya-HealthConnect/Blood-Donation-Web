@@ -9,7 +9,7 @@ import Navigation from '../components/Navigation.jsx'
 import './PublicDashboard.css'
 import '../components/DashboardHome.css'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5050'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://blood-donation-web-1pf0.onrender.com'
 
 const CHART_COLORS = ['#D32F2F', '#8E1616', '#E57373', '#B71C1C', '#FF8A80', '#C62828', '#EF9A9A']
 const STATUS_COLORS = { Donated: '#2E7D32', Attended: '#1976D2', Registered: '#E65100', Rejected: '#D32F2F' }
