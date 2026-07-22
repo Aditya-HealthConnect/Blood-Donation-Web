@@ -65,13 +65,12 @@ function RegistrationManagement() {
   }, [search, campId, branch, passoutYear, status, page])
 
   useEffect(() => {
-    fetchRegistrations()
-  }, [fetchRegistrations])
+    const fetchTimer = setTimeout(() => {
+      fetchRegistrations()
+    }, 0)
 
-  // Reset to page 1 when search/filter criteria change
-  useEffect(() => {
-    setPage(1)
-  }, [search, campId, branch, passoutYear, status])
+    return () => clearTimeout(fetchTimer)
+  }, [fetchRegistrations])
 
   // Reset all filters
   const handleResetFilters = () => {
@@ -170,7 +169,10 @@ function RegistrationManagement() {
             type="text"
             placeholder="Search by student name, email, or phone..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(1)
+            }}
           />
         </div>
         <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
@@ -185,7 +187,10 @@ function RegistrationManagement() {
           <select
             className="filter-select"
             value={campId}
-            onChange={(e) => setCampId(e.target.value)}
+            onChange={(e) => {
+              setCampId(e.target.value)
+              setPage(1)
+            }}
           >
             <option value="">All Camps</option>
             {filterOptions.camps.map((camp) => (
@@ -201,7 +206,10 @@ function RegistrationManagement() {
           <select
             className="filter-select"
             value={branch}
-            onChange={(e) => setBranch(e.target.value)}
+            onChange={(e) => {
+              setBranch(e.target.value)
+              setPage(1)
+            }}
           >
             <option value="">All Branches</option>
             {filterOptions.branches.map((b) => (
@@ -217,7 +225,10 @@ function RegistrationManagement() {
           <select
             className="filter-select"
             value={passoutYear}
-            onChange={(e) => setPassoutYear(e.target.value)}
+            onChange={(e) => {
+              setPassoutYear(e.target.value)
+              setPage(1)
+            }}
           >
             <option value="">All Years</option>
             {filterOptions.passoutYears.map((yr) => (
@@ -233,7 +244,10 @@ function RegistrationManagement() {
           <select
             className="filter-select"
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => {
+              setStatus(e.target.value)
+              setPage(1)
+            }}
           >
             <option value="">All Statuses</option>
             {filterOptions.statuses.map((st) => (
