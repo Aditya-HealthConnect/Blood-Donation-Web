@@ -6,6 +6,12 @@ import ConfirmDialog from '../components/ConfirmDialog.jsx'
 import './UserManagement.css' // Import shared form buttons
 import './Gallery.css'
 
+function formatDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString('en-IN', {
+    day: '2-digit', month: 'short', year: 'numeric',
+  })
+}
+
 function Gallery() {
   const [images, setImages] = useState([])
   const [camps, setCamps] = useState([])
