@@ -12,6 +12,18 @@ function formatDate(dateStr) {
   })
 }
 
+function getCanManageFromStorage() {
+  const stored = localStorage.getItem('admin')
+  if (!stored) return false
+
+  try {
+    const parsed = JSON.parse(stored)
+    return ['Super Admin', 'Admin'].includes(parsed.role)
+  } catch {
+    return false
+  }
+}
+
 function Gallery() {
   const [images, setImages] = useState([])
   const [camps, setCamps] = useState([])
@@ -19,8 +31,7 @@ function Gallery() {
   const [loading, setLoading] = useState(true)
 
   // Auth / Role permissions check
-  const [admin, setAdmin] = useState(null)
-  const [canManage, setCanManage] = useState(false)
+  const [canManage] = useState(getCanManageFromStorage)
 
   // Modals / forms states
   const [uploadModalOpen, setUploadModalOpen] = useState(false)
@@ -42,18 +53,6 @@ function Gallery() {
   const [editCaption, setEditCaption] = useState('')
   const [editCampId, setEditCampId] = useState('')
   const [editLoading, setEditLoading] = useState(false)
-
-  // Load user roles
-  useEffect(() => {
-    const stored = localStorage.getItem('admin')
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored)
-        setAdmin(parsed)
-        setCanManage(['Super Admin', 'Admin'].includes(parsed.role))
-      } catch { /* silent */ }
-    }
-  }, [])
 
   // Fetch all camps for album selections
   const fetchCamps = async () => {
@@ -79,8 +78,12 @@ function Gallery() {
   }, [campFilter])
 
   useEffect(() => {
-    fetchGallery()
-    fetchCamps()
+    const fetchTimer = setTimeout(() => {
+      fetchGallery()
+      fetchCamps()
+    }, 0)
+
+    return () => clearTimeout(fetchTimer)
   }, [fetchGallery])
 
   // Handle file preview change
