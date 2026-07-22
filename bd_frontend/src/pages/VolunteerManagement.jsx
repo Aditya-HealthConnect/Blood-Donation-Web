@@ -7,6 +7,18 @@ import './UserManagement.css'
 
 const LIMIT = 10
 
+function getCanWriteFromStorage() {
+  const stored = localStorage.getItem('admin')
+  if (!stored) return false
+
+  try {
+    const parsed = JSON.parse(stored)
+    return parsed.role === 'Super Admin'
+  } catch {
+    return false
+  }
+}
+
 function VolunteerManagement() {
   const [volunteers, setVolunteers] = useState([])
   const [total, setTotal] = useState(0)
@@ -32,17 +44,7 @@ function VolunteerManagement() {
   const [assignLoading, setAssignLoading] = useState(false)
 
   // Roles permissions
-  const [canWrite, setCanWrite] = useState(false)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('admin')
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored)
-        setCanWrite(parsed.role === 'Super Admin')
-      } catch {}
-    }
-  }, [])
+  const [canWrite] = useState(getCanWriteFromStorage)
 
   const fetchVolunteers = useCallback(async () => {
     try {
@@ -58,8 +60,13 @@ function VolunteerManagement() {
     }
   }, [search, page])
 
-  useEffect(() => { fetchVolunteers() }, [fetchVolunteers])
-  useEffect(() => { setPage(1) }, [search])
+  useEffect(() => {
+    const fetchTimer = setTimeout(() => {
+      fetchVolunteers()
+    }, 0)
+
+    return () => clearTimeout(fetchTimer)
+  }, [fetchVolunteers])
 
   // Fetch camps for assignment dropdown
   const fetchCamps = async () => {
@@ -184,7 +191,10 @@ function VolunteerManagement() {
             type="text"
             placeholder="Search by name, email, or mobile..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(1)
+            }}
           />
         </div>
         <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{total} volunteer{total !== 1 ? 's' : ''} found</span>
