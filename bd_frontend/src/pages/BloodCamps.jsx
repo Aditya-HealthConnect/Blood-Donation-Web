@@ -8,6 +8,18 @@ import './BloodCamps.css'
 
 const LIMIT = 10
 
+function getCanWriteFromStorage() {
+  const stored = localStorage.getItem('admin')
+  if (!stored) return false
+
+  try {
+    const parsed = JSON.parse(stored)
+    return parsed.role === 'Super Admin'
+  } catch {
+    return false
+  }
+}
+
 function BloodCamps() {
   const [camps, setCamps] = useState([])
   const [total, setTotal] = useState(0)
@@ -41,17 +53,7 @@ function BloodCamps() {
   const [deleteLoading, setDeleteLoading] = useState(false)
 
   // Auth permissions
-  const [canWrite, setCanWrite] = useState(false)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('admin')
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored)
-        setCanWrite(parsed.role === 'Super Admin')
-      } catch { /* silent */ }
-    }
-  }, [])
+  const [canWrite] = useState(getCanWriteFromStorage)
 
   // Fetch paginated camps
   const fetchCamps = useCallback(async () => {
@@ -71,12 +73,12 @@ function BloodCamps() {
   }, [search, status, page])
 
   useEffect(() => {
-    fetchCamps()
-  }, [fetchCamps])
+    const fetchTimer = setTimeout(() => {
+      fetchCamps()
+    }, 0)
 
-  useEffect(() => {
-    setPage(1)
-  }, [search, status])
+    return () => clearTimeout(fetchTimer)
+  }, [fetchCamps])
 
   // Open add modal
   const openAddModal = () => {
@@ -196,14 +198,20 @@ function BloodCamps() {
             type="text"
             placeholder="Search by name, branch, or location..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(1)
+            }}
           />
         </div>
 
         <select
           className="filter-select"
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          onChange={(e) => {
+            setStatus(e.target.value)
+            setPage(1)
+          }}
           style={{ width: '180px', height: '42px' }}
         >
           <option value="">All Statuses</option>
