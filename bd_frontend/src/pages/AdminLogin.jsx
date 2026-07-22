@@ -83,6 +83,40 @@ function AdminLogin() {
   return (
     <div className="login-page">
       <div className="login-card">
+        {/* Back to Home */}
+        <a
+          href="/"
+          style={{
+            position: 'absolute',
+            top: '16px',
+            left: '16px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '13px',
+            fontWeight: 600,
+            color: 'var(--text-muted)',
+            textDecoration: 'none',
+            padding: '6px 10px',
+            borderRadius: '6px',
+            transition: 'color 0.15s ease, background 0.15s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'var(--text-main)'
+            e.currentTarget.style.background = 'var(--bg-neutral)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--text-muted)'
+            e.currentTarget.style.background = 'transparent'
+          }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          Home
+        </a>
+
         {/* Header */}
         <div className="login-header">
           <img src={logo} alt="Blood Donation Platform" className="login-logo" />
