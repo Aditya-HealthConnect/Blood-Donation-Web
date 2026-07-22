@@ -55,7 +55,6 @@ function App() {
       {/* Volunteer — nested under DashboardLayout */}
       <Route path="/volunteer" element={<DashboardLayout />}>
         <Route path="dashboard" element={<VolunteerDashboard />} />
-        <Route path="qr-scanner" element={<DonationDesk />} />
         <Route path="attendance" element={<PlaceholderPage />} />
         <Route path="donation-status" element={<PlaceholderPage />} />
         <Route path="gallery" element={<Gallery />} />
