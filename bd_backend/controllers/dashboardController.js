@@ -106,8 +106,11 @@ const getChartData = async (_req, res) => {
       count: b.count,
     }));
 
-    // Donation status breakdown
+    // Donation status breakdown (exclude 'registered' — only show actual outcomes)
     const statusRaw = await Registration.aggregate([
+      {
+        $match: { status: { $ne: 'registered' } },
+      },
       {
         $group: {
           _id: '$status',
