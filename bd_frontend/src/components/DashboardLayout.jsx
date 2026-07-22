@@ -5,28 +5,36 @@ import { sidebarMenus, topNavLinks } from '../config/menuConfig.jsx'
 import logo from '../assets/logo.png'
 import './DashboardLayout.css'
 
+function getStoredAdmin() {
+  const stored = localStorage.getItem('admin')
+  if (!stored) return null
+
+  try {
+    return JSON.parse(stored)
+  } catch {
+    return null
+  }
+}
+
 function DashboardLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [admin, setAdmin] = useState(null)
+  const [admin] = useState(getStoredAdmin)
 
   useEffect(() => {
-    const stored = localStorage.getItem('admin')
-    if (!stored) {
-      navigate('/admin/login', { replace: true })
-      return
-    }
-    try {
-      setAdmin(JSON.parse(stored))
-    } catch {
+    if (!admin) {
       navigate('/admin/login', { replace: true })
     }
-  }, [navigate])
+  }, [admin, navigate])
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
-    setSidebarOpen(false)
+    const closeTimer = setTimeout(() => {
+      setSidebarOpen(false)
+    }, 0)
+
+    return () => clearTimeout(closeTimer)
   }, [location.pathname])
 
   // Close sidebar on Escape
