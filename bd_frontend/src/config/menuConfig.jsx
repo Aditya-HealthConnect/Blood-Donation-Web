@@ -60,16 +60,6 @@ const VolunteerMgmtIcon = (
   </svg>
 )
 
-const QrScannerIcon = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="3" width="7" height="7" />
-    <rect x="14" y="3" width="7" height="7" />
-    <rect x="3" y="14" width="7" height="7" />
-    <rect x="14" y="14" width="7" height="7" />
-    <line x1="1" y1="12" x2="23" y2="12" />
-  </svg>
-)
-
 const AttendanceIcon = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -136,7 +126,7 @@ export const sidebarMenus = {
       section: 'Main',
       items: [
         { label: 'Dashboard', path: '/volunteer/dashboard', icon: DashboardIcon },
-        { label: 'QR Scanner', path: '/volunteer/qr-scanner', icon: QrScannerIcon },
+        { label: 'Donation Desk', path: '/volunteer/donation-desk', icon: DonationStatusIcon },
         { label: 'Attendance', path: '/volunteer/attendance', icon: AttendanceIcon },
         { label: 'Donation Status', path: '/volunteer/donation-status', icon: DonationStatusIcon },
       ],
