@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage.jsx'
 import AdminLogin from './pages/AdminLogin.jsx'
+import PublicDashboard from './pages/PublicDashboard.jsx'
 import DashboardLayout from './components/DashboardLayout.jsx'
 import SuperAdminDashboard from './pages/SuperAdminDashboard.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
@@ -21,6 +22,7 @@ function App() {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/dashboard" element={<PublicDashboard />} />
       <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Super Admin — nested under DashboardLayout */}
