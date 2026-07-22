@@ -1,0 +1,59 @@
+/* ===== Public Dashboard Styles ===== */
+
+.public-dash-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+.public-dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.public-dash-header h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.public-dash-header p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.public-dash-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.public-dash-back:hover {
+  background: var(--bg-neutral);
+  border-color: var(--primary-red);
+}
+
+@media (max-width: 768px) {
+  .public-dash-container {
+    padding: 20px 16px 40px;
+  }
+
+  .public-dash-header {
+    flex-direction: column;
+  }
+}
