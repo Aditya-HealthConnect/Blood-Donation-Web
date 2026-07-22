@@ -12,6 +12,7 @@ function HomePage() {
   // Booking Modal States
   const [selectedCamp, setSelectedCamp] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [fetchingStudent, setFetchingStudent] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -63,6 +64,49 @@ function HomePage() {
         delete copy[field]
         return copy
       })
+    }
+  }
+
+  // Fetch student details by roll number
+  const handleRollCheck = async (rollNo) => {
+    const trimmed = (rollNo || '').trim()
+    if (!trimmed) {
+      toast.error('Please enter a roll number')
+      return
+    }
+
+    setFetchingStudent(true)
+    try {
+      const res = await api.get(`/api/student-lookup/${encodeURIComponent(trimmed)}`)
+      const data = res.data.data
+
+      const branchVal = Array.isArray(data.branch) ? data.branch[0] : (data.branch || '')
+
+      setFormData((prev) => ({
+        ...prev,
+        rollNumber: trimmed,
+        name: data.first_name || '',
+        email: data.email || '',
+        branch: branchVal,
+        passoutYear: data.passout_year ? String(data.passout_year) : '',
+      }))
+
+      // Clear errors for auto-filled fields
+      setErrors((prev) => {
+        const copy = { ...prev }
+        delete copy.rollNumber
+        delete copy.name
+        delete copy.email
+        delete copy.branch
+        delete copy.passoutYear
+        return copy
+      })
+
+      toast.success('Student details fetched successfully')
+    } catch {
+      toast.error('Roll number not found. Please check and try again.')
+    } finally {
+      setFetchingStudent(false)
     }
   }
 
@@ -151,8 +195,8 @@ function HomePage() {
             <a className="primary-action" href="#view-camps">
               Register for Camps
             </a>
-            <a className="secondary-action" href="/admin/login">
-              Coordinator Portal
+            <a className="secondary-action" href="/dashboard">
+              View Dashboard
             </a>
           </div>
         </div>
@@ -269,12 +313,52 @@ function HomePage() {
             <strong>{selectedCamp?.location}</strong>.
           </p>
 
+          {/* Roll Number (first field) */}
+          <div className="mgmt-form-group">
+            <label>Roll Number *</label>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input
+                type="text"
+                placeholder="e.g. 23P31A0508"
+                value={formData.rollNumber}
+                onChange={(e) => handleInputChange('rollNumber', e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    handleRollCheck(formData.rollNumber)
+                  }
+                }}
+                className={errors.rollNumber ? 'input-error' : ''}
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                className="btn-add"
+                style={{ margin: 0, height: '42px', padding: '0 16px', flexShrink: 0, whiteSpace: 'nowrap' }}
+                onClick={() => handleRollCheck(formData.rollNumber)}
+                disabled={fetchingStudent}
+              >
+                {fetchingStudent ? (
+                  <span className="btn-spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />
+                ) : (
+                  <>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14, marginRight: 4 }}>
+                      <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    Check
+                  </>
+                )}
+              </button>
+            </div>
+            {errors.rollNumber && <span className="error-text">{errors.rollNumber}</span>}
+          </div>
+
           {/* Full Name */}
           <div className="mgmt-form-group">
             <label>Full Name *</label>
             <input
               type="text"
-              placeholder="Enter your full name"
+              placeholder="Auto-filled from roll number"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
               className={errors.name ? 'input-error' : ''}
@@ -287,7 +371,7 @@ function HomePage() {
             <label>Email Address *</label>
             <input
               type="email"
-              placeholder="e.g. name@student.university.edu"
+              placeholder="Auto-filled from roll number"
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
               className={errors.email ? 'input-error' : ''}
@@ -335,7 +419,7 @@ function HomePage() {
               <label>Branch *</label>
               <input
                 type="text"
-                placeholder="e.g. CSE"
+                placeholder="Auto-filled from roll number"
                 value={formData.branch}
                 onChange={(e) => handleInputChange('branch', e.target.value)}
                 className={errors.branch ? 'input-error' : ''}
@@ -348,26 +432,13 @@ function HomePage() {
               <label>Passout Year *</label>
               <input
                 type="number"
-                placeholder="e.g. 2026"
+                placeholder="Auto-filled from roll number"
                 value={formData.passoutYear}
                 onChange={(e) => handleInputChange('passoutYear', e.target.value)}
                 className={errors.passoutYear ? 'input-error' : ''}
               />
               {errors.passoutYear && <span className="error-text">{errors.passoutYear}</span>}
             </div>
-          </div>
-
-          {/* Roll Number */}
-          <div className="mgmt-form-group">
-            <label>Roll Number *</label>
-            <input
-              type="text"
-              placeholder="e.g. 22A81A0512"
-              value={formData.rollNumber}
-              onChange={(e) => handleInputChange('rollNumber', e.target.value)}
-              className={errors.rollNumber ? 'input-error' : ''}
-            />
-            {errors.rollNumber && <span className="error-text">{errors.rollNumber}</span>}
           </div>
 
           <button type="submit" className="mgmt-form-submit" disabled={submitting}>
