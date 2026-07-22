@@ -13,6 +13,7 @@ const galleryRoutes = require('./routes/galleryRoutes');
 const donationDeskRoutes = require('./routes/donationDeskRoutes');
 const donorRoutes = require('./routes/donorRoutes');
 const campRoutes = require('./routes/campRoutes');
+const studentLookupRoutes = require('./routes/studentLookupRoutes');
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use(galleryRoutes);
 app.use(donationDeskRoutes);
 app.use(donorRoutes);
 app.use(campRoutes);
+app.use(studentLookupRoutes);
 
 const startServer = async () => {
   try {
