@@ -85,6 +85,7 @@ const getRegistrations = async (req, res) => {
         passoutYear: r.passoutYear,
         campId: r.campId?._id || '',
         campName: r.campId?.name || 'N/A',
+        organizer: r.organizer || '',
         status: r.status,
         registeredAt: r.registeredAt,
       })),
@@ -214,6 +215,7 @@ const getRegistrationById = async (req, res) => {
         bloodGroup: registration.bloodGroup,
         branch: registration.branch,
         passoutYear: registration.passoutYear,
+        organizer: registration.organizer || '',
         status: registration.status,
         registeredAt: registration.registeredAt,
         camp: registration.campId ? {
@@ -285,7 +287,7 @@ const updateRegistrationStatus = async (req, res) => {
  */
 const createRegistrationPublic = async (req, res) => {
   try {
-    const { name, email, phone, bloodGroup, branch, rollNumber, passoutYear, campId } = req.body;
+    const { name, email, phone, bloodGroup, branch, rollNumber, passoutYear, campId, organizer } = req.body;
 
     // Validate inputs
     if (!name || !email || !phone || !bloodGroup || !branch || !rollNumber || !passoutYear || !campId) {
@@ -328,6 +330,7 @@ const createRegistrationPublic = async (req, res) => {
       rollNumber: trimmedRoll,
       passoutYear: parseInt(passoutYear),
       campId,
+      organizer: organizer || '',
       status: 'registered',
     });
 

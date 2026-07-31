@@ -139,19 +139,56 @@ function DashboardHome({ greeting = 'Welcome back' }) {
   const [upcomingCamps, setUpcomingCamps] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  const [campsList, setCampsList] = useState([])
+  const [selectedCampId, setSelectedCampId] = useState('')
+  const [organizerStats, setOrganizerStats] = useState(null)
+  const [organizerLoading, setOrganizerLoading] = useState(false)
+
+  const fetchOrganizerStats = async (campId) => {
+    if (!campId) {
+      setOrganizerStats(null)
+      return
+    }
+    try {
+      setOrganizerLoading(true)
+      const res = await api.get(`/api/dashboard/organizer-stats?campId=${campId}`)
+      setOrganizerStats(res.data.data)
+    } catch (err) {
+      console.error('Failed to fetch organizer stats:', err)
+    } finally {
+      setOrganizerLoading(false)
+    }
+  }
+
+  const handleCampChange = (campId) => {
+    setSelectedCampId(campId)
+    fetchOrganizerStats(campId)
+  }
+
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [statsRes, chartsRes, regsRes, campsRes] = await Promise.all([
+        const [statsRes, chartsRes, regsRes, campsRes, listRes] = await Promise.all([
           api.get('/api/dashboard/stats'),
           api.get('/api/dashboard/charts'),
           api.get('/api/dashboard/recent-registrations'),
           api.get('/api/dashboard/upcoming-camps'),
+          api.get('/api/blood-camps/all-list'),
         ])
         setStats(statsRes.data.data)
         setCharts(chartsRes.data.data)
         setRecentRegs(regsRes.data.data)
         setUpcomingCamps(campsRes.data.data)
+
+        const camps = listRes.data.data
+        setCampsList(camps)
+        if (camps.length > 0) {
+          setSelectedCampId(camps[0].id)
+          setOrganizerLoading(true)
+          const statsResOrg = await api.get(`/api/dashboard/organizer-stats?campId=${camps[0].id}`)
+          setOrganizerStats(statsResOrg.data.data)
+          setOrganizerLoading(false)
+        }
       } catch (err) {
         console.error('Dashboard fetch error:', err)
       } finally {
@@ -282,6 +319,65 @@ function DashboardHome({ greeting = 'Welcome back' }) {
               </ResponsiveContainer>
             </div>
           </div>
+
+          {/* Organizer-wise Doughnut */}
+          <div className="chart-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <h3 className="chart-card-title" style={{ margin: 0 }}>Organizer-wise Registrations</h3>
+              <select
+                value={selectedCampId}
+                onChange={(e) => handleCampChange(e.target.value)}
+                className="filter-select"
+                style={{ width: '170px', height: '32px', padding: '0 8px', fontSize: '12px' }}
+              >
+                <option value="">Select Camp</option>
+                {campsList.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="chart-wrapper">
+              {organizerLoading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                  <span className="btn-spinner" style={{ width: 24, height: 24, borderWidth: 2 }} />
+                </div>
+              ) : organizerStats && organizerStats.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={organizerStats}
+                      dataKey="count"
+                      nameKey="name"
+                      cx="50%"
+                      cy="45%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={3}
+                      label={({ name, count }) => `${name}: ${count}`}
+                      labelLine={false}
+                      style={{ fontSize: '11px' }}
+                    >
+                      {organizerStats.map((_, i) => (
+                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend
+                      wrapperStyle={{ fontSize: '11px' }}
+                      iconType="circle"
+                      iconSize={8}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'var(--text-muted)', fontSize: '13px' }}>
+                  No organizer stats available for this camp.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -349,7 +445,6 @@ function DashboardHome({ greeting = 'Welcome back' }) {
                     <th>Branch</th>
                     <th>Date</th>
                     <th>Status</th>
-                    <th>Target</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -359,10 +454,9 @@ function DashboardHome({ greeting = 'Welcome back' }) {
                       <td>{c.branch}</td>
                       <td style={{ color: 'var(--text-muted)' }}>{formatDate(c.date)}</td>
                       <td><span className={`status-badge ${c.status}`}>{c.status}</span></td>
-                      <td>{c.targetDonors}</td>
                     </tr>
                   )) : (
-                    <tr><td colSpan="5" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>No upcoming camps</td></tr>
+                    <tr><td colSpan="4" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>No upcoming camps</td></tr>
                   )}
                 </tbody>
               </table>

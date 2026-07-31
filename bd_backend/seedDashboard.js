@@ -50,6 +50,11 @@ const seedDashboard = async () => {
         targetDonors: 120,
         actualDonors: 98,
         organizer: 'Dr. Ramesh Kumar',
+        organizers: [
+          { name: 'CSE Red Cross Club', location: 'IT Seminar Hall', roomNumber: '208', actualDonors: 45 },
+          { name: 'NSS CSE Unit', location: 'Main Auditorium Lobby', roomNumber: '101', actualDonors: 35 },
+          { name: 'Lions Club CSE', location: 'CSE Block Room 102', roomNumber: '102A', actualDonors: 18 }
+        ],
         description: 'Annual spring blood donation camp organized by CSE department.',
       },
       {
@@ -63,6 +68,10 @@ const seedDashboard = async () => {
         targetDonors: 80,
         actualDonors: 72,
         organizer: 'Prof. Lakshmi Devi',
+        organizers: [
+          { name: 'ECE Student Council', location: 'Seminar Hall B', roomNumber: '101', actualDonors: 40 },
+          { name: 'ECE Association', location: 'ECE Block Ground Floor', roomNumber: '103', actualDonors: 32 }
+        ],
         description: 'Special camp on World Blood Donor Day.',
       },
       {
@@ -76,6 +85,10 @@ const seedDashboard = async () => {
         targetDonors: 100,
         actualDonors: 85,
         organizer: 'Dr. Suresh Patel',
+        organizers: [
+          { name: 'NSS Mechanical Unit', location: 'Sports Complex Main Hall', roomNumber: '201', actualDonors: 50 },
+          { name: 'Rotaract Mechanical', location: 'Gymnasium Lobby', roomNumber: '203', actualDonors: 35 }
+        ],
         description: 'Monsoon season blood donation and health check camp.',
       },
       {
@@ -89,6 +102,10 @@ const seedDashboard = async () => {
         targetDonors: 90,
         actualDonors: 78,
         organizer: 'Prof. Anita Sharma',
+        organizers: [
+          { name: 'EEE Student Branch', location: 'Conference Hall Room A', roomNumber: '101', actualDonors: 48 },
+          { name: 'NSS EEE Volunteers', location: 'Conference Hall Foyer', roomNumber: '105', actualDonors: 30 }
+        ],
         description: 'Blood donation drive on Engineers Day.',
       },
       {
@@ -102,6 +119,10 @@ const seedDashboard = async () => {
         targetDonors: 110,
         actualDonors: 91,
         organizer: 'Dr. Karthik Rao',
+        organizers: [
+          { name: 'IT Department Club', location: 'Central Library Hall', roomNumber: '204', actualDonors: 51 },
+          { name: 'Red Cross IT Unit', location: 'IT Library Room', roomNumber: '206', actualDonors: 40 }
+        ],
         description: 'National level blood donation awareness camp.',
       },
       {
@@ -115,6 +136,10 @@ const seedDashboard = async () => {
         targetDonors: 150,
         actualDonors: 42,
         organizer: 'Red Cross Society',
+        organizers: [
+          { name: 'Red Cross Main Branch', location: 'Main Auditorium Stage', roomNumber: '101', actualDonors: 25 },
+          { name: 'Civil Dept Volunteers', location: 'Main Auditorium Entrance', roomNumber: '103', actualDonors: 17 }
+        ],
         description: 'Blood donation camp in partnership with Red Cross.',
       },
       {
@@ -128,6 +153,10 @@ const seedDashboard = async () => {
         targetDonors: 75,
         actualDonors: 18,
         organizer: 'Prof. Deepak Verma',
+        organizers: [
+          { name: 'IT Students Association', location: 'IT Block Seminar Hall', roomNumber: '301', actualDonors: 10 },
+          { name: 'NSS IT Unit', location: 'IT Block Room 304', roomNumber: '304', actualDonors: 8 }
+        ],
         description: 'IT department organized blood donation camp.',
       },
       {
@@ -141,6 +170,10 @@ const seedDashboard = async () => {
         targetDonors: 200,
         actualDonors: 0,
         organizer: 'College NSS Unit',
+        organizers: [
+          { name: 'NSS Volunteers Group 1', location: 'Sports Ground Tent A', roomNumber: '208', actualDonors: 0 },
+          { name: 'NSS Volunteers Group 2', location: 'Sports Ground Tent B', roomNumber: '101', actualDonors: 0 }
+        ],
         description: 'Special blood donation drive on Independence Day.',
       },
       {
@@ -154,6 +187,10 @@ const seedDashboard = async () => {
         targetDonors: 130,
         actualDonors: 0,
         organizer: 'Dr. Vikram Singh',
+        organizers: [
+          { name: 'Mechanical Workshop Club', location: 'Workshop Complex Bay 1', roomNumber: '201', actualDonors: 0 },
+          { name: 'SAE India College Chapter', location: 'Workshop Complex Bay 2', roomNumber: '202', actualDonors: 0 }
+        ],
         description: 'Mechanical department mega blood camp.',
       },
       {
@@ -167,6 +204,10 @@ const seedDashboard = async () => {
         targetDonors: 60,
         actualDonors: 0,
         organizer: 'Prof. Meera Das',
+        organizers: [
+          { name: 'Chemical Eng Association', location: 'Chemical Block Hall', roomNumber: '101', actualDonors: 0 },
+          { name: 'NSS Chemical Volunteers', location: 'Chemical Lab 2', roomNumber: '102', actualDonors: 0 }
+        ],
         description: 'Blood donation awareness and camp by Chemical department.',
       },
     ];
@@ -226,6 +267,9 @@ const seedDashboard = async () => {
         const randomNum = Math.floor(10 + Math.random() * 80); // 10 to 89
         const rollNumber = `22A81A${branchCode}${randomNum}`;
 
+        const orgs = camp.organizers || [];
+        const selectedOrg = orgs.length > 0 ? randomFrom(orgs).name : (camp.organizer || 'Unknown');
+
         registrations.push({
           name,
           email,
@@ -235,6 +279,7 @@ const seedDashboard = async () => {
           rollNumber,
           passoutYear: randomFrom(passoutYears),
           campId: camp._id,
+          organizer: selectedOrg,
           status,
           registeredAt: regDate,
         });

@@ -199,9 +199,63 @@ const getUpcomingCamps = async (_req, res) => {
   }
 };
 
+const getOrganizerStats = async (req, res) => {
+  try {
+    const { campId } = req.query;
+
+    if (!campId) {
+      return res.status(400).json({ success: false, message: 'Camp ID is required' });
+    }
+
+    const camp = await BloodCamp.findById(campId).lean();
+    if (!camp) {
+      return res.status(404).json({ success: false, message: 'Blood camp not found' });
+    }
+
+    const registrations = await Registration.find({ campId }).lean();
+
+    const organizersList = (camp.organizers && camp.organizers.length > 0)
+      ? camp.organizers
+      : (camp.organizer ? [{ name: camp.organizer, location: camp.location || '', roomNumber: '' }] : []);
+
+    const counts = {};
+    for (const org of organizersList) {
+      counts[org.name] = 0;
+    }
+
+    for (const reg of registrations) {
+      const regOrg = reg.organizer || camp.organizer || 'Unknown';
+      if (counts[regOrg] !== undefined) {
+        counts[regOrg]++;
+      } else {
+        counts[regOrg] = (counts[regOrg] || 0) + 1;
+      }
+    }
+
+    const data = Object.keys(counts).map(name => {
+      const config = organizersList.find(org => org.name === name) || {};
+      return {
+        name,
+        location: config.location || camp.location || '',
+        roomNumber: config.roomNumber || '',
+        count: counts[name],
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error('Get organizer stats error:', error.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getStats,
   getChartData,
   getRecentRegistrations,
   getUpcomingCamps,
+  getOrganizerStats,
 };

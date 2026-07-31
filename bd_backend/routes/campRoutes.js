@@ -8,15 +8,18 @@ const {
   getCampById,
   updateCamp,
   deleteCamp,
+  getAllCampsList,
 } = require('../controllers/campController');
 
 const router = express.Router();
 
-// Public route for landing page timeline list
+// Public routes for landing page timeline list & dropdown
 router.get('/api/blood-camps/public', getPublicCamps);
+router.get('/api/public/blood-camps/all-list', getAllCampsList);
 
 // Admin / Super Admin routes
 router.get('/api/blood-camps', protect, authorize('Super Admin', 'Admin'), getCamps);
+router.get('/api/blood-camps/all-list', protect, authorize('Super Admin', 'Admin'), getAllCampsList);
 router.get('/api/blood-camps/:id', protect, authorize('Super Admin', 'Admin'), getCampById);
 
 // Create, Edit, Delete: Restricted to Super Admin only

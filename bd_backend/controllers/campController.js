@@ -6,22 +6,40 @@ const BloodCamp = require('../models/BloodCamp');
  */
 const createCamp = async (req, res) => {
   try {
-    const { name, location, branch, date, startTime, endTime, status, targetDonors, organizer, description } = req.body;
+    const { name, location, branch, date, startTime, endTime, status, targetDonors, organizer, description, organizers } = req.body;
 
-    if (!name || !location || !branch || !date) {
+    // Fallback: If organizers list is provided, default organizer and location to the first organizer's details
+    let resolvedOrganizer = organizer;
+    let resolvedLocation = location;
+    if (organizers && organizers.length > 0) {
+      resolvedOrganizer = organizers[0].name;
+      resolvedLocation = organizers[0].location;
+    }
+
+    if (!name || !resolvedLocation || !branch || !date) {
       return res.status(400).json({ success: false, message: 'Name, Location, Branch, and Date are required' });
     }
 
+    const resolvedOrganizers = (organizers || []).map(org => ({
+      name: org.name,
+      location: org.location,
+      roomNumber: org.roomNumber,
+      actualDonors: Number(org.actualDonors) || 0,
+    }));
+    const totalActual = resolvedOrganizers.reduce((sum, org) => sum + org.actualDonors, 0);
+
     const newCamp = await BloodCamp.create({
       name,
-      location,
+      location: resolvedLocation,
       branch,
       date,
       startTime: startTime || '09:00 AM',
       endTime: endTime || '04:00 PM',
       status: status || 'upcoming',
       targetDonors: targetDonors ? parseInt(targetDonors) : 100,
-      organizer,
+      actualDonors: totalActual,
+      organizer: resolvedOrganizer,
+      organizers: resolvedOrganizers,
       description,
     });
 
@@ -85,6 +103,12 @@ const getCamps = async (req, res) => {
         targetDonors: c.targetDonors,
         actualDonors: c.actualDonors,
         organizer: c.organizer || '',
+        organizers: (c.organizers || []).map(org => ({
+          name: org.name,
+          location: org.location,
+          roomNumber: org.roomNumber || '',
+          actualDonors: org.actualDonors || 0,
+        })),
         description: c.description || '',
       })),
       total,
@@ -121,6 +145,12 @@ const getPublicCamps = async (_req, res) => {
         targetDonors: c.targetDonors,
         actualDonors: c.actualDonors,
         organizer: c.organizer || '',
+        organizers: (c.organizers || []).map(org => ({
+          name: org.name,
+          location: org.location,
+          roomNumber: org.roomNumber || '',
+          actualDonors: org.actualDonors || 0,
+        })),
         description: c.description || '',
       })),
     });
@@ -158,6 +188,12 @@ const getCampById = async (req, res) => {
         targetDonors: camp.targetDonors,
         actualDonors: camp.actualDonors,
         organizer: camp.organizer || '',
+        organizers: (camp.organizers || []).map(org => ({
+          name: org.name,
+          location: org.location,
+          roomNumber: org.roomNumber || '',
+          actualDonors: org.actualDonors || 0,
+        })),
         description: camp.description || '',
       },
     });
@@ -174,7 +210,7 @@ const getCampById = async (req, res) => {
 const updateCamp = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, location, branch, date, startTime, endTime, status, targetDonors, organizer, description } = req.body;
+    const { name, location, branch, date, startTime, endTime, status, targetDonors, organizer, description, organizers } = req.body;
 
     const camp = await BloodCamp.findById(id);
     if (!camp) {
@@ -182,15 +218,34 @@ const updateCamp = async (req, res) => {
     }
 
     if (name) camp.name = name;
-    if (location) camp.location = location;
     if (branch) camp.branch = branch;
     if (date) camp.date = date;
     if (startTime) camp.startTime = startTime;
     if (endTime) camp.endTime = endTime;
     if (status) camp.status = status;
     if (targetDonors) camp.targetDonors = parseInt(targetDonors);
-    if (organizer !== undefined) camp.organizer = organizer;
     if (description !== undefined) camp.description = description;
+
+    if (organizers !== undefined) {
+      camp.organizers = organizers.map(org => ({
+        name: org.name,
+        location: org.location,
+        roomNumber: org.roomNumber,
+        actualDonors: Number(org.actualDonors) || 0,
+      }));
+      // sum up actualDonors for the camp
+      const totalActual = camp.organizers.reduce((sum, org) => sum + org.actualDonors, 0);
+      camp.actualDonors = totalActual;
+
+      // sync first organizer details to old fields for compatibility
+      if (camp.organizers.length > 0) {
+        camp.organizer = camp.organizers[0].name;
+        camp.location = camp.organizers[0].location;
+      }
+    } else {
+      if (location) camp.location = location;
+      if (organizer !== undefined) camp.organizer = organizer;
+    }
 
     await camp.save();
 
@@ -230,6 +285,30 @@ const deleteCamp = async (req, res) => {
   }
 };
 
+const getAllCampsList = async (_req, res) => {
+  try {
+    const camps = await BloodCamp.find().select('name status date organizers').sort({ date: -1 }).lean();
+    res.status(200).json({
+      success: true,
+      data: camps.map(c => ({
+        id: c._id,
+        name: c.name,
+        status: c.status,
+        date: c.date,
+        organizers: (c.organizers || []).map(org => ({
+          name: org.name,
+          location: org.location,
+          roomNumber: org.roomNumber || '',
+          actualDonors: org.actualDonors || 0,
+        })),
+      })),
+    });
+  } catch (error) {
+    console.error('Get all camps list error:', error.message);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createCamp,
   getCamps,
@@ -237,4 +316,5 @@ module.exports = {
   getCampById,
   updateCamp,
   deleteCamp,
+  getAllCampsList,
 };
