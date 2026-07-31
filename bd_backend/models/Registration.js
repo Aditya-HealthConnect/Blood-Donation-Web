@@ -44,6 +44,10 @@ const registrationSchema = new mongoose.Schema({
     ref: 'BloodCamp',
     required: [true, 'Camp ID is required'],
   },
+  organizer: {
+    type: String,
+    trim: true,
+  },
   status: {
     type: String,
     enum: {
