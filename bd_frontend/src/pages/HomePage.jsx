@@ -21,6 +21,7 @@ function HomePage() {
     branch: '',
     rollNumber: '',
     passoutYear: '',
+    organizer: '',
   })
   const [errors, setErrors] = useState({})
 
@@ -42,7 +43,14 @@ function HomePage() {
 
   // Open booking modal
   const handleOpenRegister = (camp) => {
-    setSelectedCamp(camp)
+    const resolvedOrgs = (camp.organizers && camp.organizers.length > 0)
+      ? camp.organizers
+      : (camp.organizer ? [{ name: camp.organizer, location: camp.location || '', roomNumber: '' }] : []);
+
+    setSelectedCamp({
+      ...camp,
+      organizers: resolvedOrgs,
+    })
     setFormData({
       name: '',
       email: '',
@@ -51,6 +59,7 @@ function HomePage() {
       branch: '',
       rollNumber: '',
       passoutYear: '',
+      organizer: '',
     })
     setErrors({})
   }
@@ -136,6 +145,10 @@ function HomePage() {
       temp.passoutYear = 'Passout year is required'
     } else if (isNaN(yearNum) || yearNum < 2020 || yearNum > 2035) {
       temp.passoutYear = 'Please enter a valid year (e.g. 2026)'
+    }
+
+    if (selectedCamp?.organizers && selectedCamp.organizers.length > 0 && !formData.organizer) {
+      temp.organizer = 'Selecting an organizer is required'
     }
 
     setErrors(temp)
@@ -312,6 +325,39 @@ function HomePage() {
             <strong>{selectedCamp ? formatDate(selectedCamp.date) : ''}</strong> at{' '}
             <strong>{selectedCamp?.location}</strong>.
           </p>
+
+          {/* Camp Name (read-only) */}
+          <div className="mgmt-form-group">
+            <label>Selected Blood Camp</label>
+            <input
+              type="text"
+              value={selectedCamp?.name || ''}
+              readOnly
+              disabled
+              style={{ background: 'var(--bg-neutral)', cursor: 'not-allowed' }}
+            />
+          </div>
+
+          {/* Organizer Dropdown select */}
+          {selectedCamp?.organizers && selectedCamp.organizers.length > 0 && (
+            <div className="mgmt-form-group">
+              <label>Select Organizer & Location *</label>
+              <select
+                value={formData.organizer}
+                onChange={(e) => handleInputChange('organizer', e.target.value)}
+                className={`filter-select ${errors.organizer ? 'input-error' : ''}`}
+                style={{ width: '100%', height: '42px' }}
+              >
+                <option value="">— Select Organizer (Location) —</option>
+                {selectedCamp.organizers.map((org) => (
+                  <option key={org.name} value={org.name}>
+                    {org.name}, {org.location}{org.roomNumber ? `, Room ${org.roomNumber}` : ''}
+                  </option>
+                ))}
+              </select>
+              {errors.organizer && <span className="error-text">{errors.organizer}</span>}
+            </div>
+          )}
 
           {/* Roll Number (first field) */}
           <div className="mgmt-form-group">
