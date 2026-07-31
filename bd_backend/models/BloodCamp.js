@@ -48,6 +48,15 @@ const bloodCampSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  organizers: {
+    type: [{
+      name: { type: String, trim: true, required: true },
+      location: { type: String, trim: true, required: true },
+      roomNumber: { type: String, trim: true },
+      actualDonors: { type: Number, default: 0 }
+    }],
+    default: [],
+  },
   description: {
     type: String,
     trim: true,
