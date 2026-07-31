@@ -336,7 +336,14 @@ function RegistrationManagement() {
                         {reg.bloodGroup}
                       </span>
                     </td>
-                    <td style={{ fontWeight: 500 }}>{reg.campName}</td>
+                    <td style={{ fontWeight: 500 }}>
+                      <div>{reg.campName}</div>
+                      {reg.organizer && (
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginTop: '2px', fontWeight: 400 }}>
+                          Org: {reg.organizer}
+                        </span>
+                      )}
+                    </td>
                     <td>
                       <span className={`status-badge ${reg.status}`} style={{ textTransform: 'capitalize' }}>
                         {reg.status}
@@ -442,6 +449,10 @@ function RegistrationManagement() {
               <div className="detail-item">
                 <span>Camp Name</span>
                 <strong>{selectedReg.camp?.name || 'N/A'}</strong>
+              </div>
+              <div className="detail-item">
+                <span>Selected Organizer</span>
+                <strong>{selectedReg.organizer || 'N/A'}</strong>
               </div>
               <div className="detail-item">
                 <span>Location</span>
